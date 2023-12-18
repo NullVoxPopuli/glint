@@ -27,7 +27,7 @@
     "globals/index.d.ts"
   ],
   "dependencies": {
-    "content-tag": "^1.1.0"
+    "content-tag": "^1.2.2"
   },
   "peerDependencies": {
     "@glint/environment-ember-loose": "^1.2.1",
