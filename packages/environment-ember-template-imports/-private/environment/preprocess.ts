@@ -8,33 +8,27 @@ import { GLOBAL_TAG, PreprocessData, TemplateLocation } from './common';
 const TEMPLATE_START = `[${GLOBAL_TAG}\``;
 const TEMPLATE_END = '`]';
 
+// content-tag 1.2.2:
+//   The current file is a CommonJS module whose imports will produce 'require' calls; 
+//   however, the referenced file is an ECMAScript module and cannot be imported with 'require'. 
+//   Consider writing a dynamic 'import("content-tag")' call instead.
+//   To convert this file to an ECMAScript module, change its file extension to '.mts', 
+//   or add the field `"type": "module"` to 'glint/packages/environment-ember-template-imports/package.json'.ts(1479)
+//
+// ...Except, 
+//    > the referenced file is an ECMAScript module 
+//
+//    package.json#exports does refer to a cjs file if required, so TS should be resolving the `require`
+//    entries not the `import` entries.
+//
+//    https://github.com/embroider-build/content-tag/blob/v1.2.2-content-tag/package.json#L13-L21
+//
+// @ts-expect-error
 import { Preprocessor } from 'content-tag';
 const p = new Preprocessor();
 
-interface Parsed {
-  type: 'expression' | 'class-member';
-  tagName: 'template';
-  contents: string;
-  range: {
-    start: number;
-    end: number;
-  };
-  contentRange: {
-    start: number;
-    end: number;
-  };
-  startRange: {
-    end: number;
-    start: number;
-  };
-  endRange: {
-    start: number;
-    end: number;
-  };
-}
-
 export const preprocess: GlintExtensionPreprocess<PreprocessData> = (source, path) => {
-  let templates = p.parse(source, path) as Parsed[];
+  let templates = p.parse(source, path);
 
   let templateLocations: Array<TemplateLocation> = [];
   let segments: Array<string> = [];
